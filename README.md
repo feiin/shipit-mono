@@ -27,10 +27,9 @@ module.exports = function (shipit) {
       repositoryUrl: 'https://github.com/user/repo.git',
       ignores: ['.git', 'node_modules'],
       keepReleases: 2,
-      shallowClone: true,
+      shallowClone: false,
       xbuild:{
                 solutionDir:'',
-                framework:'v4.0',
                 configuration:'Release',
                 csprojPath:'testWeb/test.csproj'
              }
@@ -169,24 +168,43 @@ The current symlink path : `path.join(shipit.config.deployTo, 'current')`.
 
 ###xbuild
 ####solutionDir
+
+Type: `String`
+
 Attached during `deploy:build` task.  
 
 solution(*.sln) directory within the workspace
 
 ####framework
+
+Type: `String`
+
 Attached during `deploy:build` task.  
 
 .net  framework version.
 
 ####configuration
+
+Type: `String`
+
 Attached during `deploy:build` task.  
 
 xbuild configuration
 
 ####csprojPath
+
+Type: `String`
+
+
 Attached during `deploy:build` task.  
 
 web.csproj within the workspace which should be deployed.
+
+
+####properties
+Type:`Object`
+
+extra properties
 
 
 
