@@ -245,6 +245,8 @@ the same with shipit-deploy
 - git 1.7.8+
 - rsync 3+
 - OpenSSH 5+
+- mono
+- xamarin studio
 
 ## License
 
