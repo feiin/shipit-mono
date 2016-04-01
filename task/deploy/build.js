@@ -19,7 +19,7 @@ function build(gruntOrShipit) {
             configuration: 'release'
         };
 
-        if(!xbuildOptions.output) {
+        if (!xbuildOptions.output) {
             xbuildOptions.output = shipit.config.dirToCopy = shipit.config.dirToCopy || 'output';
         }
 
@@ -33,7 +33,6 @@ function build(gruntOrShipit) {
             var cwd = path.resolve(shipit.config.workspace, xbuildOptions.solutionDir);
             return shipit.local(exec_command, {cwd: cwd}).then(function () {
                 shipit.log(chalk.green('nuget restore success.'));
-                shipit.emit('builded');
             });
         }
 
@@ -62,19 +61,19 @@ function build(gruntOrShipit) {
             var projPath = path.resolve(shipit.config.workspace, xbuildOptions.csprojPath);
             var csproj = new Csproj(projPath);
 
-            var outReleaseDir = path.resolve(shipit.config.workspace,xbuildOptions.output);
+            var outReleaseDir = path.resolve(shipit.config.workspace, xbuildOptions.output);
             var cwd = path.resolve(shipit.config.workspace, xbuildOptions.solutionDir);
 
-            var promise = new Promise(function(resolve,reject){
-                csproj.getDeployFiles(function(err,items) {
-                    if(err) {
+            var promise = new Promise(function (resolve, reject) {
+                csproj.getDeployFiles(function (err, items) {
+                    if (err) {
                         return reject(err);
                     }
                     resolve(items)
                 })
             });
 
-            return promise.mapSeries(function(item) {
+            return promise.mapSeries(function (item) {
 
                 var from = path.resolve(path.dirname(projPath), item);
                 var to = path.resolve(outReleaseDir, item);
@@ -97,8 +96,8 @@ function build(gruntOrShipit) {
         function copyDeployBin() {
             shipit.log('cp deploy files in"%s"', shipit.config.workspace);
             var projPath = path.resolve(shipit.config.workspace, xbuildOptions.csprojPath);
-            var binPath = path.resolve(path.dirname(projPath),'bin');
-            var outputBinPath = path.resolve(shipit.config.workspace, xbuildOptions.output,'bin');
+            var binPath = path.resolve(path.dirname(projPath), 'bin');
+            var outputBinPath = path.resolve(shipit.config.workspace, xbuildOptions.output, 'bin');
             var cwd = path.resolve(shipit.config.workspace);
             var exec_command = [
                 'cp',
@@ -108,6 +107,7 @@ function build(gruntOrShipit) {
             ];
             return shipit.local(exec_command.join(' '), {cwd: cwd}).then(function () {
                 shipit.log(chalk.green('cp bin: ' + binPath + ' success.'));
+                shipit.emit('builded');
             });
         }
     }

@@ -1,8 +1,11 @@
+var rewire = require('rewire');
 var sinon = require('sinon');
 require('sinon-as-promised');
 var expect = require('chai').use(require('sinon-chai')).expect;
-var monoBuildFactory = require('../../task/deploy/build');
+var monoBuildFactory = rewire('../../task/deploy/build');
 var Shipit = require('shipit-cli');
+var Csproj = rewire('../../lib/csproj');
+
 
 describe('deploy:build task', function () {
     var shipit;
@@ -10,7 +13,7 @@ describe('deploy:build task', function () {
     beforeEach(function () {
         shipit = new Shipit({
             environment: 'test',
-            log: sinon.stub()
+            log: function(msg) {console.log(msg)}
         });
 
         shipit.stage = 'test';
@@ -37,6 +40,14 @@ describe('deploy:build task', function () {
         sinon.stub(shipit, 'local').resolves({
             stdout: 'ok'
         });
+
+        monoBuildFactory.__set__('fs',{
+            ensureDirSync:function(path){
+
+            }
+        });
+        Csproj.__set__('fs',require('../mocks/fsCsprojMock'));
+        monoBuildFactory.__set__('Csproj',Csproj);
 
         exec_command = [
             "xbuild",
