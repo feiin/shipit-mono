@@ -1,6 +1,6 @@
 var rewire = require('rewire');
 var Csproj = rewire('../lib/csproj');
-var should = require('chai').should();
+var should = require('should');
 
 describe('deploy:build task', function () {
 
