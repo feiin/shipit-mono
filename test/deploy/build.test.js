@@ -6,7 +6,7 @@ var Shipit = require('shipit-cli');
 
 describe('deploy:build task', function () {
     var shipit;
-    var exec_command = '';
+    var exec_command = [];
     beforeEach(function () {
         shipit = new Shipit({
             environment: 'test',
@@ -29,7 +29,6 @@ describe('deploy:build task', function () {
                     framework:'v4.0',
                     csprojPath:'web/test.csproj',
                     properties:{
-                        output:'./publish/'
                     }
                 }
 
