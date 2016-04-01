@@ -38,7 +38,7 @@ function build(gruntOrShipit) {
 
         function buildProject() {
             shipit.log('begin mono xbuild repository in "%s"', shipit.config.workspace);
-            var cwd = path.resolve(shipit.config.workspace, xbuildOptions.solutionDir);
+            var cwd = shipit.config.workspace;
             var exec_command = [
                 "xbuild",
                 xbuildOptions.csprojPath,
