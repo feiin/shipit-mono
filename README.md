@@ -169,18 +169,20 @@ The current symlink path : `path.join(shipit.config.deployTo, 'current')`.
 
 ###xbuild
 ####solutionDir
+Attached during deploy:build task.
 
 solution(*.sln) directory within the workspace
 
 ####framework
-
+Attached during deploy:build task.
 .net  framework version.
 
 ####configuration
-
+Attached during deploy:build task.
 xbuild configuration
 
 ####csprojPath
+Attached during deploy:build task.
 web.csproj within the workspace which should be deployed.
 
 
