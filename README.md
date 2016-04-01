@@ -32,7 +32,7 @@ module.exports = function (shipit) {
                 solutionDir:'',
                 framework:'v4.0',
                 configuration:'Release',
-                csprojPath:'testNpoco/test.csproj'
+                csprojPath:'testWeb/test.csproj'
              }
     },
     staging: {
