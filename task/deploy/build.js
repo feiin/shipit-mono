@@ -14,7 +14,6 @@ function build(gruntOrShipit) {
     function task() {
         var shipit = utils.getShipit(gruntOrShipit);
         var xbuildOptions = {
-            framework: 'v4.0',
             solutionDir: '',
             configuration: 'release'
         };
@@ -43,8 +42,12 @@ function build(gruntOrShipit) {
                 "xbuild",
                 xbuildOptions.csprojPath,
                 "/p:configuration=" + xbuildOptions.configuration,
-                "/p:TargetFrameworkVersion=" + xbuildOptions.framework
             ];
+
+            if(xbuildOptions.framework) {
+                exec_command.push("/p:TargetFrameworkVersion=" + xbuildOptions.framework)
+            }
+
             for (var p in xbuildOptions.properties) {
                 exec_command.push(["/p:", p, "=", xbuildOptions.properties[p]].join(""));
             }
