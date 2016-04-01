@@ -30,6 +30,7 @@ describe('deploy:build task', function () {
         csproj.getDeployFiles(function(err,list){
             should.not.exist(err);
             should.exist(list);
+            console.log(list);
             list.length.should.be.aboveOrEqual(0);
             done();
         });

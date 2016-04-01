@@ -74,7 +74,6 @@ function build(gruntOrShipit) {
             });
 
             return promise.mapSeries(function (item) {
-
                 var from = path.resolve(path.dirname(projPath), item);
                 var to = path.resolve(outReleaseDir, item);
                 var toDir = path.dirname(to);

@@ -81,6 +81,7 @@ var fsMock = {
             <Content Include="Views\\Shared\\_Layout.cshtml" />\
             <Content Include="Views\\Shared\\Error.cshtml" />\
             <Content Include="Views\\_ViewStart.cshtml" />\
+            <Content Include="test\\findbarButton-next-rtl%402x.png" />\
             <Content Include="Web.config" />\
             <Content Include="Global.asax" />\
             <Content Include="packages.config" />\
