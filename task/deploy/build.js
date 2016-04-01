@@ -88,7 +88,7 @@ function build(gruntOrShipit) {
                 ];
 
                 return shipit.local(exec_command.join(' '), {cwd: cwd}).then(function () {
-                    shipit.log(chalk.green('cp ' + item + ' success.'));
+                    shipit.log(chalk.green('cp content:' + item + ' success.'));
                 });
             })
 
@@ -107,7 +107,7 @@ function build(gruntOrShipit) {
                 outputBinPath
             ];
             return shipit.local(exec_command.join(' '), {cwd: cwd}).then(function () {
-                shipit.log(chalk.green('cp bin ' + binPath + ' success.'));
+                shipit.log(chalk.green('cp bin: ' + binPath + ' success.'));
             });
         }
     }
