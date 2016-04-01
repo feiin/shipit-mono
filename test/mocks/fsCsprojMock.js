@@ -77,7 +77,7 @@ var fsMock = {
             </Compile>\
             </ItemGroup>\
             <ItemGroup>\
-            <Content Include="Views\\Home\\Index.cshtml" />\
+            <Content Include="Views\\Home\\chalk.cshtml" />\
             <Content Include="Views\\Shared\\_Layout.cshtml" />\
             <Content Include="Views\\Shared\\Error.cshtml" />\
             <Content Include="Views\\_ViewStart.cshtml" />\
