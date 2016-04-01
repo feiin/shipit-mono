@@ -24,4 +24,15 @@ describe('deploy:build task', function () {
         });
 
     });
+
+    it('should get deploy files success',function(done){
+        var csproj = new Csproj('/test/projects/web/web.csproj');
+        csproj.getDeployFiles(function(err,list){
+            should.not.exist(err);
+            should.exist(list);
+            list.length.should.be.aboveOrEqual(0);
+            done();
+        });
+
+    });
 });
