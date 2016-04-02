@@ -39,17 +39,17 @@ function build(gruntOrShipit) {
             shipit.log('begin mono xbuild repository in "%s"', shipit.config.workspace);
             var cwd = shipit.config.workspace;
             var exec_command = [
-                "xbuild",
+                'xbuild',
                 xbuildOptions.csprojPath,
-                "/p:configuration=" + xbuildOptions.configuration,
+                '/p:configuration=' + xbuildOptions.configuration,
             ];
 
             if(xbuildOptions.framework) {
-                exec_command.push("/p:TargetFrameworkVersion=" + xbuildOptions.framework)
+                exec_command.push('/p:TargetFrameworkVersion=' + xbuildOptions.framework)
             }
 
             for (var p in xbuildOptions.properties) {
-                exec_command.push(["/p:", p, "=", xbuildOptions.properties[p]].join(""));
+                exec_command.push(['/p:', p, '=', xbuildOptions.properties[p]].join(""));
             }
             exec_command = exec_command.join(' ');
 
