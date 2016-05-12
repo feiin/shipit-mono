@@ -104,7 +104,7 @@ function build(gruntOrShipit) {
             var exec_command = [
                 'cp',
                 '-rf',
-                binPath,
+                binPath + '/',
                 outputBinPath
             ];
             return shipit.local(exec_command.join(' '), {cwd: cwd}).then(function () {
