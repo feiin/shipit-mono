@@ -6,7 +6,8 @@ var path = require('path');
 var _ = require('lodash');
 var Csproj = require('../../lib/csproj');
 var Promise = require('bluebird');
-var fs = require("fs-extra");
+var fs = require('fs-extra');
+var xdt = require('node-xdt')
 
 function build(gruntOrShipit) {
     utils.registerTask(gruntOrShipit, 'deploy:build', task);
@@ -24,7 +25,11 @@ function build(gruntOrShipit) {
 
         _.assign(xbuildOptions, shipit.config.xbuild);
 
-        return nugetRestore().then(buildProject).then(copyDeployFiles).then(copyDeployBin);
+        return nugetRestore()
+            .then(buildProject)
+            .then(copyDeployFiles)
+            .then(transformWebConfig)
+            .then(copyDeployBin);
 
         function nugetRestore() {
             shipit.log('nuget restore "%s"', shipit.config.workspace);
@@ -110,6 +115,29 @@ function build(gruntOrShipit) {
             return shipit.local(exec_command.join(' '), {cwd: cwd}).then(function () {
                 shipit.log(chalk.green('cp bin: ' + binPath + ' success.'));
                 shipit.emit('builded');
+            });
+        }
+
+        function transformWebConfig() {
+            if(!shipit.config.xdt) {
+                return Promise.resolve();
+            }
+
+            var projPath = path.resolve(shipit.config.workspace, xbuildOptions.csprojPath);
+            var xdtName = (shipit.config.xdtName || 'Web');
+            var configPath = path.join(path.dirname(projPath), xdtName + '.config');
+            var transformPath = path.join(path.dirname(projPath), xdtName + '.' + shitpit.config.xdt + '.config');
+            var savePath = path.resolve(shipit.config.workspace, xbuildOptions.output, xdtName + '.config');
+            var options = {
+                src: configPath,
+                dest: savePath,
+                transform: transformPath
+            };
+            shipit.log('transform config : "%s" with "%s"', configPath, transformPath);
+
+            var pXdt = Promise.promisify(xdt);
+            return pXdt(options).then(function(){
+                shipit.log(chalk.green('transform config success : "%s" ', savePath));
             });
         }
     }
