@@ -133,11 +133,11 @@ function build(gruntOrShipit) {
                 dest: savePath,
                 transform: transformPath
             };
-            shipit.log('transform config : "%s" with "%s"', configPath, transformPath);
+            shipit.log('transform config : ' + configPath + ' with ' + transformPath);
 
             var pXdt = Promise.promisify(xdt);
             return pXdt(options).then(function(){
-                shipit.log(chalk.green('transform config success : "%s" ', savePath));
+                shipit.log(chalk.green('transform config success : ' + savePath));
             });
         }
     }

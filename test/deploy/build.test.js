@@ -47,6 +47,12 @@ describe('deploy:build task', function () {
 
             }
         });
+
+        monoBuildFactory.__set__('xdt',function(options,cb){
+            console.log('xdt transform mock: ',options);
+            cb();
+        });
+
         Csproj.__set__('fs',require('../mocks/fsCsprojMock'));
         monoBuildFactory.__set__('Csproj',Csproj);
 
