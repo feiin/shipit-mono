@@ -126,7 +126,7 @@ function build(gruntOrShipit) {
             var projPath = path.resolve(shipit.config.workspace, xbuildOptions.csprojPath);
             var xdtName = (shipit.config.xdtName || 'Web');
             var configPath = path.join(path.dirname(projPath), xdtName + '.config');
-            var transformPath = path.join(path.dirname(projPath), xdtName + '.' + shitpit.config.xdt + '.config');
+            var transformPath = path.join(path.dirname(projPath), xdtName + '.' + shipit.config.xdt + '.config');
             var savePath = path.resolve(shipit.config.workspace, xbuildOptions.output, xdtName + '.config');
             var options = {
                 src: configPath,

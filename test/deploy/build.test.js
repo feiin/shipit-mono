@@ -26,6 +26,7 @@ describe('deploy:build task', function () {
                 keepReleases: 5,
                 deleteOnRollback: false,
                 shallowClone: true,
+                xdt:'Release',
                 xbuild:{
                     solutionDir:'',
                     configuration:'release',
