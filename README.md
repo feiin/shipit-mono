@@ -27,6 +27,7 @@ module.exports = function (shipit) {
       repositoryUrl: 'https://github.com/user/repo.git',
       ignores: ['.git', 'node_modules'],
       keepReleases: 2,
+      //xdt:'Release',
       shallowClone: false,
       xbuild:{
                 solutionDir:'',
@@ -109,6 +110,21 @@ Path to SSH key
 Type: `Number`
 
 Number of releases to keep on the remote server.
+
+### xdt
+
+Type: `String`
+
+ transform Web.config using xdt(Microsoft Xml Document Transformation). Default: ''
+
+Example: 
+
+xdt = `Release`
+
+```
+ Web.config + Web.Release.config  -> Web.config  
+ 
+```
 
 ### shallowClone
 
