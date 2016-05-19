@@ -132,6 +132,14 @@ Type: `Boolean`
 
 Perform a shallow clone. Default: `false`.
 
+###updateSubmodules
+
+Type: `Boolean`
+
+Update submodules. Default: `false`.
+
+
+
 ### gitLogFormat
 
 Type: `String`
