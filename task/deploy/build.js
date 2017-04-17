@@ -69,7 +69,7 @@ function build(gruntOrShipit) {
         function nugetRestore() {
             shipit.log('nuget restore "%s"', shipit.config.workspace);
             var exec_command = util.format('nuget restore');
-            var cwd = xbuildOptions.solutionPath;
+            var cwd = path.dirname(xbuildOptions.solutionPath);
             return shipit.local(exec_command, { cwd: cwd }).then(function () {
                 shipit.log(chalk.green('nuget restore success.'));
             });
@@ -90,7 +90,7 @@ function build(gruntOrShipit) {
             return slnparser(slnText).then((solution) => {
                 for (let project of solution.projects) {
                     if (project.name == xbuildOptions.target) {
-                        xbuildOptions.csprojPath = path.resolve(path.dirname(xbuildOptions.solutionPath), project.path);
+                        xbuildOptions.csprojPath = path.resolve(path.dirname(xbuildOptions.solutionPath), project.path.replace('\\',path.sep));
                     }
                 }
             });

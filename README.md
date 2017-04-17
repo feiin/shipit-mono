@@ -28,13 +28,15 @@ module.exports = function (shipit) {
       repositoryUrl: 'https://github.com/user/repo.git',
       ignores: ['.git', 'node_modules'],
       keepReleases: 2,
-      //xdt:'Release',
+      xdt:'Release'
       shallowClone: false,
       xbuild:{
-                solutionDir:'',
-                configuration:'Release',
-                csprojPath:'testWeb/test.csproj'
-             }
+                solutionPath:'./src/Kings.sln',
+                target:'Kings.Web',
+                properties:{
+                    Configuration:'Release'
+                }
+            }
     },
     staging: {
       servers: 'user@myserver.com'
@@ -112,7 +114,7 @@ Type: `Number`
 
 Number of releases to keep on the remote server.
 
-### xdt
+### xdtName
 
 Type: `String`
 
@@ -120,7 +122,7 @@ Type: `String`
 
 Example: 
 
-xdt = `Release`
+xdtName = `Release`
 
 ```
  Web.config + Web.Release.config  -> Web.config  
