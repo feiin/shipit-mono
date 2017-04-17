@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 var fsMock = {
     readFile:function(file,cb) {
         cb(null,'<?xml version="1.0" encoding="utf-8"?>\

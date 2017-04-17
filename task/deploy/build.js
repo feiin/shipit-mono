@@ -8,6 +8,9 @@ var Csproj = require('../../lib/csproj');
 var Promise = require('bluebird');
 var fs = require('fs-extra');
 var xdt = require('node-xdt')
+const xbuilder = require('xbuilder');
+const vsslnparse = require('vssln-parser');
+
 
 function build(gruntOrShipit) {
     utils.registerTask(gruntOrShipit, 'deploy:build', task);
@@ -15,17 +18,22 @@ function build(gruntOrShipit) {
     function task() {
         var shipit = utils.getShipit(gruntOrShipit);
         var xbuildOptions = {
-            solutionDir: '',
-            configuration: 'release'
+            solutionPath: '',
+            target: '',
+            properties: {
+                Configuration: 'Release'
+            }
         };
 
         if (!xbuildOptions.output) {
             xbuildOptions.output = shipit.config.dirToCopy = shipit.config.dirToCopy || 'output';
         }
+        xbuildOptions.solutionPath = path.resolve(shipit.config.workspace, xbuildOptions.solutionPath);
 
         _.assign(xbuildOptions, shipit.config.xbuild);
 
         return nugetRestore()
+            .then(parseTargetProject)
             .then(buildProject)
             .then(copyDeployFiles)
             .then(transformWebConfig)
@@ -34,31 +42,40 @@ function build(gruntOrShipit) {
         function nugetRestore() {
             shipit.log('nuget restore "%s"', shipit.config.workspace);
             var exec_command = util.format('nuget restore');
-            var cwd = path.resolve(shipit.config.workspace, xbuildOptions.solutionDir);
-            return shipit.local(exec_command, {cwd: cwd}).then(function () {
+            var cwd = xbuildOptions.solutionPath;
+            return shipit.local(exec_command, { cwd: cwd }).then(function () {
                 shipit.log(chalk.green('nuget restore success.'));
+            });
+        }
+
+        function parseTargetProject() {
+            shipit.log('parse target project "%s"', xbuildOptions.solutionPath);
+            const slnText = fs.readFileSync(xbuildOptions.solutionPath, 'utf-8');
+
+            function parseSlnFile(slnText, cb) {
+                vsslnparse(slnText, solution => {
+                    cb(null, solution);
+                });
+
+            };
+            let slnparser = Promise.promisify(parseSlnFile);
+
+            return slnparser(slnText).then((solution) => {
+                for (let project of solution.projects) {
+                    if (project.name == xbuildOptions.target) {
+                        xbuildOptions.csprojPath = path.resolve(path.dirname(xbuildOptions.solutionPath), project.path);
+                    }
+                }
             });
         }
 
         function buildProject() {
             shipit.log('begin mono xbuild repository in "%s"', shipit.config.workspace);
             var cwd = shipit.config.workspace;
-            var exec_command = [
-                'xbuild',
-                xbuildOptions.csprojPath,
-                '/p:configuration=' + xbuildOptions.configuration,
-            ];
+            var buildCommand = xbuilder.getXbuildCommand(xbuildOptions);
+            var exec_command = 'xbuild ' + buildCommand.join(' ');
 
-            if(xbuildOptions.framework) {
-                exec_command.push('/p:TargetFrameworkVersion=' + xbuildOptions.framework)
-            }
-
-            for (var p in xbuildOptions.properties) {
-                exec_command.push(['/p:', p, '=', xbuildOptions.properties[p]].join(""));
-            }
-            exec_command = exec_command.join(' ');
-
-            return shipit.local(exec_command, {cwd: cwd}).then(function () {
+            return shipit.local(exec_command, { cwd: cwd }).then(function () {
                 shipit.log(chalk.green('build success.'));
                 shipit.emit('builded');
             });
@@ -66,11 +83,11 @@ function build(gruntOrShipit) {
 
         function copyDeployFiles() {
             shipit.log('cp deploy files in"%s"', shipit.config.workspace);
-            var projPath = path.resolve(shipit.config.workspace, xbuildOptions.csprojPath);
-            var csproj = new Csproj(projPath);
 
+            var projPath = xbuildOptions.csprojPath;
+            var csproj = new Csproj(projPath);
             var outReleaseDir = path.resolve(shipit.config.workspace, xbuildOptions.output);
-            var cwd = path.resolve(shipit.config.workspace, xbuildOptions.solutionDir);
+            var cwd = path.dirname(xbuildOptions.solutionPath);
 
             var promise = new Promise(function (resolve, reject) {
                 csproj.getDeployFiles(function (err, items) {
@@ -82,7 +99,7 @@ function build(gruntOrShipit) {
             });
 
             return promise.mapSeries(function (item) {
-                var from = path.resolve(path.dirname(projPath), item);
+                var from = path.resolve(path.dirname(xbuildOptions.csprojPath), item);
                 var to = path.resolve(outReleaseDir, item);
                 var toDir = path.dirname(to);
                 fs.ensureDirSync(toDir);
@@ -93,7 +110,7 @@ function build(gruntOrShipit) {
                     to
                 ];
 
-                return shipit.local(exec_command.join(' '), {cwd: cwd}).then(function () {
+                return shipit.local(exec_command.join(' '), { cwd: cwd }).then(function () {
                     shipit.log(chalk.green('cp content:' + item + ' success.'));
                 });
             })
@@ -102,8 +119,8 @@ function build(gruntOrShipit) {
 
         function copyDeployBin() {
             shipit.log('cp deploy files in"%s"', shipit.config.workspace);
-            var projPath = path.resolve(shipit.config.workspace, xbuildOptions.csprojPath);
-            var binPath = path.resolve(path.dirname(projPath), 'bin');
+            var projPath = path.dirname(xbuildOptions.csprojPath);
+            var binPath = path.resolve(projPath, './bin');
             var outputBinPath = path.resolve(shipit.config.workspace, xbuildOptions.output, 'bin');
             var cwd = path.resolve(shipit.config.workspace);
             var exec_command = [
@@ -112,18 +129,18 @@ function build(gruntOrShipit) {
                 binPath + '/',
                 outputBinPath
             ];
-            return shipit.local(exec_command.join(' '), {cwd: cwd}).then(function () {
+            return shipit.local(exec_command.join(' '), { cwd: cwd }).then(function () {
                 shipit.log(chalk.green('cp bin: ' + binPath + ' success.'));
                 shipit.emit('builded');
             });
         }
 
         function transformWebConfig() {
-            if(!shipit.config.xdt) {
+            if (!shipit.config.xdt) {
                 return Promise.resolve();
             }
 
-            var projPath = path.resolve(shipit.config.workspace, xbuildOptions.csprojPath);
+            var projPath = xbuildOptions.csprojPath;
             var xdtName = (shipit.config.xdtName || 'Web');
             var configPath = path.join(path.dirname(projPath), xdtName + '.config');
             var transformPath = path.join(path.dirname(projPath), xdtName + '.' + shipit.config.xdt + '.config');
@@ -136,7 +153,7 @@ function build(gruntOrShipit) {
             shipit.log('transform config : ' + configPath + ' with ' + transformPath);
 
             var pXdt = Promise.promisify(xdt);
-            return pXdt(options).then(function(){
+            return pXdt(options).then(function () {
                 shipit.log(chalk.green('transform config success : ' + savePath));
             });
         }
