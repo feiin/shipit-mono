@@ -114,7 +114,7 @@ Type: `Number`
 
 Number of releases to keep on the remote server.
 
-### xdtName
+### xdt
 
 Type: `String`
 
@@ -122,7 +122,7 @@ Type: `String`
 
 Example: 
 
-xdtName = `Release`
+xdt = `Release`
 
 ```
  Web.config + Web.Release.config  -> Web.config  
