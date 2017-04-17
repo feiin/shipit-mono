@@ -8,7 +8,6 @@ var Csproj = require('../../lib/csproj');
 var Promise = require('bluebird');
 var fs = require('fs-extra');
 var xdt = require('node-xdt')
-const xbuilder = require('xbuilder');
 const vsslnparse = require('vssln-parser');
 
 
@@ -28,10 +27,38 @@ function build(gruntOrShipit) {
         if (!xbuildOptions.output) {
             xbuildOptions.output = shipit.config.dirToCopy = shipit.config.dirToCopy || 'output';
         }
-        xbuildOptions.solutionPath = path.resolve(shipit.config.workspace, xbuildOptions.solutionPath);
 
         _.assign(xbuildOptions, shipit.config.xbuild);
+        xbuildOptions.solutionPath = path.resolve(shipit.config.workspace, xbuildOptions.solutionPath);
 
+        function getXbuildCommand(options) {
+            var xbuildOptions = {
+                target: '',
+                properties: {
+                    Configuration: 'Release'
+                },
+                targets: [],
+                solutionPath: ''
+            }
+            _.assign(xbuildOptions, options);
+
+            var exec_command = [];
+
+            for (var p in xbuildOptions.properties) {
+                exec_command.push(['/p:', p, '=', xbuildOptions.properties[p]].join(""));
+            }
+
+            if (xbuildOptions.target && xbuildOptions.targets.indexOf(xbuildOptions.target) < 0) {
+                xbuildOptions.targets.push(xbuildOptions.target);
+            }
+
+            if(xbuildOptions.target) {
+                exec_command.push(xbuildOptions.csprojPath);
+            } else {
+                exec_command.push(xbuildOptions.solutionPath);
+            }
+            return exec_command;
+        }
         return nugetRestore()
             .then(parseTargetProject)
             .then(buildProject)
@@ -72,7 +99,7 @@ function build(gruntOrShipit) {
         function buildProject() {
             shipit.log('begin mono xbuild repository in "%s"', shipit.config.workspace);
             var cwd = shipit.config.workspace;
-            var buildCommand = xbuilder.getXbuildCommand(xbuildOptions);
+            var buildCommand = getXbuildCommand(xbuildOptions);
             var exec_command = 'xbuild ' + buildCommand.join(' ');
 
             return shipit.local(exec_command, { cwd: cwd }).then(function () {
