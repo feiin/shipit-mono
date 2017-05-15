@@ -32,6 +32,7 @@ module.exports = function (shipit) {
       shallowClone: false,
       xbuild:{
                 solutionPath:'./src/Kings.sln',
+                buildTool:'msbuild', //or xbuild
                 target:'Kings.Web',
                 properties:{
                     Configuration:'Release'
@@ -193,16 +194,16 @@ Attached during `deploy:init`, `rollback:init`, and `pending:log` tasks.
 
 The current symlink path : `path.join(shipit.config.deployTo, 'current')`.
 
-###xbuild
+### xbuild
 
-####buildTool
+#### buildTool
 Type:`String`
 Attached during `deploy:build` task.  default `msbuild`
 
 options: `msbuild` or `xbuild`
 
 
-####solutionDir
+#### solutionDir
 
 Type: `String`
 
@@ -210,7 +211,7 @@ Attached during `deploy:build` task.
 
 solution(*.sln) directory within the workspace
 
-####framework
+#### framework
 
 Type: `String`
 
@@ -218,7 +219,7 @@ Attached during `deploy:build` task.
 
 .net  framework version.
 
-####configuration
+#### configuration
 
 Type: `String`
 
@@ -226,7 +227,7 @@ Attached during `deploy:build` task.
 
 xbuild configuration
 
-####csprojPath
+#### csprojPath
 
 Type: `String`
 
@@ -236,7 +237,7 @@ Attached during `deploy:build` task.
 web.csproj within the workspace which should be deployed.
 
 
-####properties
+#### properties
 Type:`Object`
 
 extra properties
