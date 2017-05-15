@@ -194,6 +194,14 @@ Attached during `deploy:init`, `rollback:init`, and `pending:log` tasks.
 The current symlink path : `path.join(shipit.config.deployTo, 'current')`.
 
 ###xbuild
+
+####buildTool
+Type:`String`
+Attached during `deploy:build` task.  default `msbuild`
+
+options: `msbuild` or `xbuild`
+
+
 ####solutionDir
 
 Type: `String`

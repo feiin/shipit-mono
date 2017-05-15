@@ -18,6 +18,7 @@ function build(gruntOrShipit) {
         var shipit = utils.getShipit(gruntOrShipit);
         var xbuildOptions = {
             solutionPath: '',
+            buildTool: 'msbuild',
             target: '',
             properties: {
                 Configuration: 'Release'
@@ -29,6 +30,9 @@ function build(gruntOrShipit) {
         }
 
         _.assign(xbuildOptions, shipit.config.xbuild);
+        if (!xbuildOptions.buildTool) {
+            xbuildOptions.buildTool = 'msbuild';
+        }
         xbuildOptions.solutionPath = path.resolve(shipit.config.workspace, xbuildOptions.solutionPath);
 
         function getXbuildCommand(options) {
@@ -52,7 +56,7 @@ function build(gruntOrShipit) {
                 xbuildOptions.targets.push(xbuildOptions.target);
             }
 
-            if(xbuildOptions.target) {
+            if (xbuildOptions.target) {
                 exec_command.push(xbuildOptions.csprojPath);
             } else {
                 exec_command.push(xbuildOptions.solutionPath);
@@ -90,7 +94,7 @@ function build(gruntOrShipit) {
             return slnparser(slnText).then((solution) => {
                 for (let project of solution.projects) {
                     if (project.name == xbuildOptions.target) {
-                        xbuildOptions.csprojPath = path.resolve(path.dirname(xbuildOptions.solutionPath), project.path.replace('\\',path.sep));
+                        xbuildOptions.csprojPath = path.resolve(path.dirname(xbuildOptions.solutionPath), project.path.replace('\\', path.sep));
                     }
                 }
             });
